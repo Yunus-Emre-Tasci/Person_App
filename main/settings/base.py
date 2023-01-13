@@ -209,3 +209,6 @@ REST_AUTH_SERIALIZERS = {
     'TOKEN_SERIALIZER': 'users.serializers.CustomTokenSerializer',
     
 }
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / "pictures"
