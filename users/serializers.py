@@ -68,6 +68,6 @@ class CustomTokenSerializer(TokenSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     
     class Meta:
-        model:Profile
+        model=Profile
         fields="__all__"        
         
