@@ -2,7 +2,7 @@ from django.shortcuts import render
 from .serializers import DepartmentSerializer,PersonnelSerializer
 from rest_framework import generics,status
 from .models import Department,Personnel
-from .permissions import IsStafforReadOnly
+from .permissions import IsStafforReadOnly,IsOwnerAndStaffOrReadOnly
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
@@ -39,4 +39,35 @@ class PersonnelListCreateView(generics.ListCreateAPIView):
         return Response(data, status=status.HTTP_201_CREATED, headers=headers)
     
     def perform_create(self, serializer):
-        serializer.save()
+        person=serializer.save()
+        person.create_user=self.request.user
+        person.save()
+        return person
+    
+    
+class PersonalGetUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Personnel.objects.all()
+    serializer_class=PersonnelSerializer    
+    # permission_classes=[IsAuthenticated,IsOwnerAndStaffOrReadOnly]
+    permission_classes=[IsAuthenticated]
+    
+    def put(self,request,*args,**kwargs):
+        instance=self.get_object()
+        if self.request.user.is_staff and (instance.create_user==self.request.user):
+            return self.update(request,*args,**kwargs)
+        else:
+            data={
+                "message":"Yetkiniz yoktur.."
+            }
+            return Response(data, status=status.HTTP_401_UNAUTHORIZED)
+        
+    def delete(self,request,*args,**kwargs):
+        if self.request.user.is_superuser:
+            return self.destroy(request,*args,**kwargs)
+        else:
+            data = {
+                "message": "Yetkiniz yoktur.."
+            }
+            return Response(data ,status=status.HTTP_401_UNAUTHORIZED)    
+        
+         
