@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .serializers import DepartmentSerializer,PersonnelSerializer
+from .serializers import DepartmentSerializer,PersonnelSerializer,DepartmentPersonnelSerializer
 from rest_framework import generics,status
 from .models import Department,Personnel
 from .permissions import IsStafforReadOnly,IsOwnerAndStaffOrReadOnly
@@ -71,3 +71,10 @@ class PersonalGetUpdateDelete(generics.RetrieveUpdateDestroyAPIView):
             return Response(data ,status=status.HTTP_401_UNAUTHORIZED)    
         
          
+class DepartmentPersonnelView(generics.ListAPIView):
+    queryset=Department.objects.all()
+    serializer_class=DepartmentPersonnelSerializer      
+    
+    def get_queryset(self):
+        name=self.kwargs["department"]
+        return Department.objects.filter(name__iexact=name)  
