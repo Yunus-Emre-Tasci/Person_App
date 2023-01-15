@@ -83,4 +83,4 @@ class DepartmentPersonnelView(generics.ListAPIView):
 class Custom(generics.RetrieveAPIView):
     serializer_class=DepartmentPersonnelSerializer
     queryset=Department.objects.all()
-    lookup_field="namw"     
+    lookup_field="name"     
